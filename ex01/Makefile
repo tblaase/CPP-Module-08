@@ -1,4 +1,4 @@
-NAME		=
+NAME		=	Span
 
 CXX			=	c++
 
@@ -20,7 +20,7 @@ UP			=	\033[A
 CUT			=	\033[K
 
 #source files
-SRC_FILES	=
+SRC_FILES	=	main.cpp Span.cpp
 
 OBJ_FILES	=	$(SRC_FILES:.cpp=.o)
 
