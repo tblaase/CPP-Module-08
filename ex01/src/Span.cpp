@@ -6,28 +6,24 @@
 /*   By: tblaase <tblaase@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 18:15:36 by tblaase           #+#    #+#             */
-/*   Updated: 2022/04/19 18:51:54 by tblaase          ###   ########.fr       */
+/*   Updated: 2022/04/20 17:58:21 by tblaase          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Span.hpp"
 
 // Constructors
-Span::Span()
+Span::Span(): _size(0), _pos(0) //is private --> unusable and unnecessary
 {
-	std::cout << "Span Default Constructor called" << std::endl;
-	/*CODE*/
 }
 
-Span::Span(unsigned int N): _size(N)
+Span::Span(unsigned int N): _size(N), _pos(0)
 {
 	std::cout << "Span Constructor for size of " << N << " called" << std::endl;
-	this->_storage = new int[this->_size];
-	if (this->_storage == NULL)
-		throw(AllocationFailedException())
+	this->_storage.reserve(this->getSize());
 }
 
-Span::Span(const Span &src)
+Span::Span(const Span &src): _size(src.getSize()), _pos(src.getPos())
 {
 	std::cout << "Span Copy Constructor called" << std::endl;
 	*this = src;
@@ -37,11 +33,10 @@ Span::Span(const Span &src)
 Span::~Span()
 {
 	std::cout << "Span Deconstructor called" << std::endl;
-	/*CODE*/
 }
 
 // Overloaded Operators
-Span &Span::operator=(const Span &src)
+Span	&Span::operator=(const Span &src)
 {
 	std::cout << "Span Assignation operator called" << std::endl;
 	if (this == &src)
@@ -51,15 +46,108 @@ Span &Span::operator=(const Span &src)
 	return *this;
 }
 
-// Exceptions
-const char	*Span::InvalidIndexException::what() const throw()
+// Public Methods
+
+/**
+ * @brief  puts number into the vector of the Span class
+ * @note   also the _pos is counted up, if all elements are filled, an exception is thrown
+ * @param  number: the integer to add
+ * @retval None
+ */
+void	Span::addNumber(int number)
 {
-	return ("Error: Invalid index");
+	if ((this->_pos != 0 && this->_storage.empty() == true) || this->_storage.max_size() < this->getSize())
+		throw (Span::VectorInvalidException());
+	if (this->getPos() + 1 > this->getSize())
+		throw (Span::ArrayFullException());
+	else
+	{
+		this->_pos++;
+		this->_storage.push_back(number);
+	}
+	// std::cout << "added " << number << std::endl; // prints each number that got added
 }
 
-const char	*Span::AllocationFailedException::what() const throw()
+/**
+ * @brief  fills range elements with random numbers
+ * @note   the random numbers depend on the time_t seed that is passsed
+ * @param  range: number of elements to fill
+ * @param  seed: the seed for the random function
+ * @retval None
+ */
+void	Span::addNumber(unsigned int range, time_t seed)
 {
-	return ("Error: Allocation failed");
+	srand(seed);
+	for (size_t i = 0; i < range; i++)
+	{
+		try
+		{
+			addNumber(rand());
+		}
+		catch(const std::exception& e)
+		{
+			std::cerr << e.what() << '\n';
+		}
+	}
+
+}
+
+unsigned int	Span::shortestSpan(void) const
+{
+	if (this->_pos == 1 || this->_storage.size() == 1)
+		throw (Span::ComparisonInvalidException());
+
+	std::vector<int> v(this->_storage);			// 10 20 30 30 20 10 10 20
+
+	std::sort (v.begin(), v.end());				// 10 10 10 20 20 20 30 30
+
+	// first_low = std::lower_bound (v.begin(), v.end(), INT_MIN);
+	// temp_it = first_low;
+	// second_low = std::lower_bound(temp_it , v.end(), INT_MIN);
+	// return (*second_low - *first_low);
+	int low_first, low_second;
+	std::vector<int>::iterator temp_it = v.begin();
+	low_first = *temp_it;
+	std::advance(temp_it, 1);
+	low_second = *temp_it;
+
+	return (low_second - low_first);
+}
+
+unsigned int	Span::longestSpan(void)const
+{
+	if (this->_pos == 1 || this->_storage.size() == 1)
+		throw (Span::ComparisonInvalidException());
+
+	std::vector<int> v(this->_storage);			// 10 20 30 30 20 10 10 20
+	int low, high;
+
+	std::sort (v.rbegin(), v.rend());			// 30 30 20 20 20 10 10 10
+	high = *v.begin();
+
+	std::sort (v.begin(), v.end());				// 10 10 10 20 20 20 30 30
+	low = *v.begin();
+
+	return (high - low);
+}
+
+// Getter
+unsigned int	Span::getSize() const
+{
+	return (this->_size);
+}
+
+unsigned int	Span::getPos() const
+{
+	return (this->_pos);
+}
+
+// Setter
+
+// Exceptions
+const char	*Span::VectorInvalidException::what() const throw()
+{
+	return ("Error: Invalid or broken vector");
 }
 
 const char	*Span::ArrayFullException::what() const throw()
@@ -67,9 +155,7 @@ const char	*Span::ArrayFullException::what() const throw()
 	return ("Error: Array full");
 }
 
-// Public Methods
-
-// Getter
-
-// Setter
-
+const char	*Span::ComparisonInvalidException::what() const throw()
+{
+	return ("Error: more than one element in vector needed to be compared");
+}

@@ -6,7 +6,7 @@
 /*   By: tblaase <tblaase@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 18:14:13 by tblaase           #+#    #+#             */
-/*   Updated: 2022/04/19 18:51:41 by tblaase          ###   ########.fr       */
+/*   Updated: 2022/04/20 17:08:03 by tblaase          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,23 +17,26 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
-#include <iterator>
 #include <exception>
-#include <array>
+#include <vector>
+#include <iterator>
+#include <climits>
 
 // classes
 
 class Span
 {
 	private:
-		int *_storage;
+		std::vector<int> _storage;
 		unsigned int _size;
 		unsigned int _pos;
 
+		Span();
+
 	public:
 	// Constructors
-		Span();
 		Span(unsigned int N);
+		Span(const Span &src);
 
 	// Deconstructors
 		~Span();
@@ -43,17 +46,18 @@ class Span
 
 	// Public Methods
 		void addNumber(int number);
+		void addNumber(unsigned int range, time_t seed);
 		unsigned int shortestSpan()const;
 		unsigned int longestSpan()const;
 
-	// Exceptions
-	class	InvalidIndexException : public std::exception
-	{
-		public:
-			virtual const char	*what() const throw();
-	};
+	// Getter
+		unsigned int getSize()const;
+		unsigned int getPos()const;
 
-	class	AllocationFailedException : public std::exception
+	// Setter
+
+	// Exceptions
+	class	VectorInvalidException : public std::exception
 	{
 		public:
 			virtual const char	*what() const throw();
@@ -65,8 +69,9 @@ class Span
 			virtual const char	*what() const throw();
 	};
 
-	// Getter
-
-	// Setter
-
+	class	ComparisonInvalidException : public std::exception
+	{
+		public:
+			virtual const char	*what() const throw();
+	};
 };
