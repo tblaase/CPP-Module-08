@@ -1,7 +1,7 @@
 # CPP-Module-08
 My solution for CPP Module 08 of the Common core of 42 school.
 
-![result](https://github.com/tblaase/CPP-Module-07/blob/main/readme_additions/result.png)
+![result](https://github.com/tblaase/CPP-Module-08/blob/main/readme_additions/result.png)
 
 ## List of all my cpp-modules
 
