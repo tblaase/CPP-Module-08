@@ -6,7 +6,7 @@
 /*   By: tblaase <tblaase@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 18:15:36 by tblaase           #+#    #+#             */
-/*   Updated: 2022/04/20 17:58:21 by tblaase          ###   ########.fr       */
+/*   Updated: 2022/05/12 14:13:02 by tblaase          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,17 +101,17 @@ unsigned int	Span::shortestSpan(void) const
 
 	std::sort (v.begin(), v.end());				// 10 10 10 20 20 20 30 30
 
-	// first_low = std::lower_bound (v.begin(), v.end(), INT_MIN);
-	// temp_it = first_low;
-	// second_low = std::lower_bound(temp_it , v.end(), INT_MIN);
-	// return (*second_low - *first_low);
-	int low_first, low_second;
+	unsigned int ret = UINT_MAX;
 	std::vector<int>::iterator temp_it = v.begin();
-	low_first = *temp_it;
-	std::advance(temp_it, 1);
-	low_second = *temp_it;
-
-	return (low_second - low_first);
+	std::vector<int>::iterator temp_it_next = v.begin() + 1;
+	while (temp_it_next != v.end())
+	{
+		if ((unsigned int)(*temp_it_next - *temp_it) < ret)
+			ret = *temp_it_next - *temp_it;
+		++temp_it_next;
+		++temp_it;
+	}
+	return (ret);
 }
 
 unsigned int	Span::longestSpan(void)const
